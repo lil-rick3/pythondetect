@@ -6,5 +6,5 @@ This is an array of tuples. In each tuple, there is a number and another tuple. 
 The other int value is from 0 to 4, and corresponds to the color, which is goes as 0:r, 1:b, 2:g, y:3  
 
 To run the program, type this into the command line: 
-"""python detect.py --source 0 --weights 300epoch.pt --agnostic --hide-conf --delay 1"" 
+```python detect.py --source 0 --weights 300epoch.pt --agnostic --hide-conf --delay 1``` 
 The delay feature allows for the framerate to be slowed down, and the source will be either 0 or 1 depending on if there is a webcam or other camera as a potential source.
