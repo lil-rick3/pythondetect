@@ -33,7 +33,7 @@ import os
 import platform
 import sys
 from pathlib import Path
-
+import time
 import torch
 
 FILE = Path(__file__).resolve()
@@ -79,6 +79,7 @@ def run(
         half=False,  # use FP16 half-precision inference
         dnn=False,  # use OpenCV DNN for ONNX inference
         vid_stride=1,  # video frame-rate stride
+        delay = 0
 ):
     source = str(source)
     save_img = not nosave and not source.endswith('.txt')  # save inference images
@@ -138,6 +139,7 @@ def run(
 
         # Process predictions
         for i, det in enumerate(pred):  # per image
+            initial_time = time.time() # important timing parameter
             seen += 1
             if webcam:  # batch_size >= 1
                 p, im0, frame = path[i], im0s[i].copy(), dataset.count
@@ -215,7 +217,10 @@ def run(
                     vid_writer[i].write(im0)
 
         # Print time (inference-only)
+
         LOGGER.info(f"{s}{'' if len(det) else '(no detections), '}{dt[1].dt * 1E3:.1f}ms")
+        while(time.time() - initial_time < delay):
+            continue
 
     # Print results
     t = tuple(x.t / seen * 1E3 for x in dt)  # speeds per image
@@ -256,6 +261,7 @@ def parse_opt():
     parser.add_argument('--half', action='store_true', help='use FP16 half-precision inference')
     parser.add_argument('--dnn', action='store_true', help='use OpenCV DNN for ONNX inference')
     parser.add_argument('--vid-stride', type=int, default=1, help='video frame-rate stride')
+    parser.add_argument('--delay', type=float, default=0)
     opt = parser.parse_args()
     opt.imgsz *= 2 if len(opt.imgsz) == 1 else 1  # expand
     print_args(vars(opt))
